@@ -1,0 +1,139 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: double_pinyin_lantian
+  name: 蓝天双拼
+  version: "0.1"
+  author:
+    - dvvb
+  description: |
+    蓝天双拼方案(rime)
+    
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中, EN ]
+  - name: full_shape
+    states: [ 半, 全 ]
+  - name: simplification
+    reset: 1
+    states: [ 繁, 简]
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+     
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - echo_translator
+    - punct_translator
+    - script_translator
+  filters:
+    - simplifier
+    - uniquifier
+    
+speller:
+  alphabet: abcdefghijklmnopqrstuvwxyz
+  delimiter: " '"                   # 隔音符[']
+  algebra:  
+    - erase/^xx$/                   # 消除xx编码
+    - derive/^([jqxy])u$/$1v/       # 韵母 u=v
+    
+    - xform/^zh/V/
+    - xform/^ch/I/
+    - xform/^sh/U/
+    
+    - xform/^([aoe])(\w)?/$1$1$2/      # 重叠零声母
+    - xform/^eer/er/                   # 调整er
+    
+    - xform/ua$/Q/     
+    - xform/iu$/T/
+    - xform/uo$/O/
+    - xform/ie$/P/
+    - xform/uan$/H/    
+    - xform/ian$/M/ 
+    - xform/eng$/Z/
+    - xform/in$/X/
+    - xform/ui$/V/
+    - xform/un$/B/
+    - xform/[uv]e$/Y/
+    - xform/i?ong$/S/
+    
+    - xform/uai$|ing$/F/
+    - xform/ia$/K/
+    - xform/[u|i]ang$/L/  
+    - xform/ang$/G/    
+    - xform/iao$/N/
+    - xform/(\w)ao$/$1C/
+    - xform/(\w)ai$/$1D/
+    - xform/(\w)an$/$1J/
+    - xform/(\w)ei$/$1W/ 
+    - xform/(\w)en$/$1K/
+    - xform/(\w)ou$/$1R/
+    
+    - xlit/QWERTYUIOPASDFGHJKLZXCVBNM/qwertyuiopasdfghjklzxcvbnm/  #转回小写
+
+translator:
+  dictionary: luna_pinyin                   #共用词典
+  prism: double_pinyin_lantian
+  preedit_format:
+    - xform/([nljqxy])v/$1ü/
+
+    - xform/([dtnlgkhzcsrviu])o/$1uo/       # 提前处理混淆
+    - xform/([bpmdtnljqx])n/$1iao/          
+    - xform/(\w)g/$1ang/
+
+    - xform/([gkhviu])f/$1uai/
+    - xform/(\w)f/$1ing/
+    - xform/([nljqx])l/$1iang/
+    - xform/(\w)l/$1uang/ 
+    - xform/([pljqx])k/$1ia/
+    - xform/(\w)k/$1en/
+    - xform/([jqx])s/$1iong/
+    - xform/(\w)s/$1ong/
+    
+    - xform/([pmfdtnlgkhyzcsrviuo])r/$1ou/   #排除er 增加or
+    
+    - xform/(\w)q/$1ua/
+    - xform/(\w)y/$1üe/
+    - xform/(\w)w/$1ei/
+    - xform/(\w)t/$1iu/
+    - xform/(\w)p/$1ie/
+    - xform/(\w)d/$1ai/   
+    - xform/(\w)h/$1uan/
+    - xform/(\w)j/$1an/
+    - xform/(\w)z/$1eng/
+    - xform/(\w)x/$1in/
+    - xform/(\w)c/$1ao/
+    - xform/(\w)v/$1ui/
+    - xform/(\w)m/$1ian/
+    - xform/(\w)b/$1un/
+
+    - xform/(^|[ \'])v/$1zh/
+    - xform/(^|[ \'])i/$1ch/
+    - xform/(^|[ \'])u/$1sh/
+
+    - xform/([aoe])\1(\w)?/$1$2/                   # 去除重叠声母
+    
+punctuator:
+  import_preset: default
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
